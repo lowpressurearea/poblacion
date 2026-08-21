@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poblacion Itinerary</title>
+<link rel="icon" href="map.jpg" type="image/jpg">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#2e2620;
+    --paper:#faf6ee;
+    --paper2:#ffffff;
+    --teal:#8a6a3a;
+    --teal-dark:#6b5029;
+    --gold:#a3282a;
+    --gold-light:#f4e3c1;
+    --line:#e3dccb;
+    --stub:#f6f0e0;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:'Inter',sans-serif;padding:32px 16px 56px;
+  }
+  .wrap{max-width:680px;margin:0 auto;}
+
+  header{text-align:center;margin-bottom:28px;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--teal-dark);margin-bottom:6px;
+  }
+  h1{
+    font-family:'Fraunces',serif;font-weight:600;font-size:clamp(26px,5vw,36px);
+    margin:0 0 8px;line-height:1.15;color:var(--ink);
+  }
+  .sub{color:#6b6353;font-size:14.5px;max-width:460px;margin:0 auto;}
+
+  .meta{
+    display:flex;justify-content:space-between;align-items:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:#6b6353;
+    margin:24px 4px 18px;
+  }
+  .meta span.tag{background:var(--gold-light);color:var(--gold);padding:3px 9px;border-radius:100px;}
+
+  .stub{
+    background:var(--paper2);border:1px solid var(--line);border-radius:14px;
+    padding:16px 18px;margin-bottom:10px;position:relative;
+  }
+  .stub.transit{background:var(--stub);border-style:dashed;}
+  .time{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--teal-dark);
+    letter-spacing:.03em;margin-bottom:2px;
+  }
+  .stub.transit .time{color:var(--gold);}
+  .title{font-weight:600;font-size:15.5px;margin-bottom:2px;color:var(--ink);}
+  .desc{font-size:13px;color:#6b6353;line-height:1.5;}
+
+  .placecard{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:4px;}
+  .placecard .row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .rating{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;
+    color:#1c1c1e;background:var(--gold-light);color:var(--gold);padding:2px 8px;border-radius:100px;
+  }
+  .review-blurb{font-size:12.5px;color:#7a715f;font-style:italic;line-height:1.5;}
+  .maplink{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--teal);
+    text-decoration:none;border-bottom:1px dotted var(--teal);
+  }
+  .article-btn{
+    display:inline-flex;align-items:center;gap:5px;margin-top:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--teal-dark);
+    background:var(--gold-light);padding:6px 12px;border-radius:100px;
+    text-decoration:none;width:fit-content;border:1px solid var(--line);
+  }
+
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 2px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:2px 8px;
+    border-radius:100px;border:1px solid var(--line);color:#6b6353;
+  }
+  .chip.live-dir{color:var(--gold);border-color:var(--gold);text-decoration:none;cursor:pointer;}
+  .chip.show-map-btn{
+    font-family:'IBM Plex Mono',monospace;color:var(--gold);background:var(--stub);cursor:pointer;
+  }
+  .leg-map-wrap{margin-top:8px;}
+  .leg-map-wrap iframe{width:100%;height:200px;border:0;border-radius:8px;display:block;}
+
+  .optional-suggestion{
+    margin-top:10px;border:1.5px solid #e0a83a;border-radius:10px;overflow:hidden;
+    background:rgba(224,168,58,.08);
+  }
+  .optional-suggestion summary{
+    cursor:pointer;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:12px;
+    color:#8a5a10;list-style:none;display:flex;align-items:center;gap:8px;font-weight:500;
+  }
+  .optional-suggestion summary::-webkit-details-marker{display:none;}
+  .optional-suggestion summary::after{content:'▾';transition:.2s;margin-left:auto;}
+  .optional-suggestion[open] summary::after{transform:rotate(180deg);}
+  .optional-badge{
+    font-size:9.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+    background:#e0a83a;color:#fff;padding:2px 7px;border-radius:100px;flex:none;
+  }
+  .optional-suggestion-body{padding:0 12px 12px;font-size:12.5px;}
+
+  .home-badge{
+    text-align:center;font-family:'IBM Plex Mono',monospace;font-size:12px;
+    color:var(--gold);margin:14px 0 4px;padding:8px;
+    border:1px dashed var(--gold);border-radius:100px;background:var(--gold-light);
+  }
+
+  .site-preview{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;}
+  .site-preview iframe{width:100%;height:240px;border:0;display:block;}
+  .site-preview-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8a8272;
+    padding:6px 10px;border-top:1px solid var(--line);background:#f6f1e6;
+  }
+
+  footer{text-align:center;margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b6966;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Belair → Poblacion, Makati</div>
+    <h1>Poblacion Itinerary</h1>
+    <p class="sub">A planned afternoon out — full route, timing, and stops below.</p>
+  </header>
+
+  <div class="meta"><span>ETD 8:30–9:00 AM · Belair</span><span class="tag">Home by 8–9 PM</span></div>
+
+  <div class="stub" data-lat="14.2369253" data-lng="121.05525" data-prevlat="14.2639304" data-prevlng="121.0743493">
+    <div class="time">8:30–9:00 AM</div>
+    <div class="title">Leave Belair</div>
+    <div class="desc">Head over to Nuvali Transport Terminal.</div>
+    <div class="chips"><span class="chip leg"></span></div>
+  </div>
+
+  <div class="stub transit" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.2369253" data-prevlng="121.05525">
+    <div class="time">9:00 AM or 9:40 AM</div>
+    <div class="title">P2P, Nuvali → One Ayala Terminal</div>
+    <div class="desc">Either the 9:00 AM or the 9:40 AM P2P trip direct from Nuvali Transport Terminal to One Ayala — whichever fits better.</div>
+    <div class="chips"><span class="chip leg"></span></div>
+  </div>
+
+  <div class="stub transit" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.5504567" data-prevlng="121.02787">
+    <div class="time">↳ transit</div>
+    <div class="title">Grab, One Ayala → Lunch</div>
+    <div class="chips"><span class="chip leg"></span></div>
+  </div>
+
+  <div class="stub" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.562249" data-prevlng="121.029193">
+    <div class="time">~11:30 AM</div>
+    <div class="title">Lunch at Izakaya Tori-Ichizu</div>
+    <div class="desc">Skewers and small plates, unhurried.</div>
+    <div class="placecard">
+      <div class="row1"><span class="rating">★ 4.6 · 1,351 reviews</span></div>
+      <div class="review-blurb">A Poblacion favorite — well-priced sushi and gyoza, attentive staff, and a lively izakaya feel. Frequently named a best-value Japanese spot in the area.</div>
+      <a class="maplink" href="https://www.google.com/maps/place/?q=place_id:ChIJd0STSwDJlzMRbP326XQyTwk" target="_blank">Open in Google Maps ↗</a>
+      <div class="site-preview">
+        <iframe src="https://toriichizuph.com" loading="lazy" referrerpolicy="no-referrer"></iframe>
+        <div class="site-preview-label">toriichizuph.com — official site</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stub" data-lat="14.563338" data-lng="121.032933" data-prevlat="14.562249" data-prevlng="121.029193">
+    <div class="time">~1:00 PM</div>
+    <div class="title">Dessert and coffee at Saglit by Flower Ranch Cafe</div>
+    <div class="chips"><span class="chip leg"></span></div>
+    <div class="placecard">
+      <div class="row1"><span class="rating">★ 4.7 · 193 reviews</span></div>
+      <div class="review-blurb">A café and flower shop in one — quiet, plant-filled, with a resident cat. The lemon espresso tonic and oat matcha latte are regularly praised.</div>
+      <a class="maplink" href="https://www.google.com/maps/place/?q=place_id:ChIJlWcujmHJlzMR0QfHHgOfOVw" target="_blank">Open in Google Maps ↗</a>
+      <br><a class="article-btn" href="https://flowerranchcafe.com/collections/saglit?sort_by=manual&filter.p.product_type=gid%3A%2F%2Fshopify%2FFilterSettingGroup%2F53805344&filter.v.price.gte=&filter.v.price.lte=" target="_blank">📄 Browse Saglit collection ↗</a>
+    </div>
+  </div>
+
+  <div class="stub" data-lat="14.5633" data-lng="121.0329" data-prevlat="14.563338" data-prevlng="121.032933">
+    <div class="time">~2:00 PM</div>
+    <div class="title">Stroll around Poblacion</div>
+    <div class="desc">Flexible — let the day set the pace.</div>
+    <div class="chips"><span class="chip leg"></span></div>
+    <details class="optional-suggestion">
+      <summary><span class="optional-badge">Optional</span> 💡 Power Plant Mall nearby</summary>
+      <div class="optional-suggestion-body">
+        <div class="desc">Just a suggestion, not part of the set plan — a short walk from Saglit if there's time for a quieter, more upscale stroll to round out the afternoon.</div>
+        <div class="chips">
+          <span class="chip">~0.4 km from Saglit</span>
+          <a class="chip live-dir" href="https://www.google.com/maps/dir/?api=1&origin=14.563338,121.032933&destination=14.5646875,121.0364375&travelmode=walking" target="_blank">Live directions ↗</a>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="stub transit" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.5633" data-prevlng="121.0329">
+    <div class="time">↳ transit</div>
+    <div class="title">Grab, Poblacion → One Ayala</div>
+    <div class="chips"><span class="chip leg"></span></div>
+    <details class="optional-suggestion">
+      <summary>🍽️ Early Dinner at One Ayala</summary>
+      <div class="optional-suggestion-body">
+        <div class="desc">Since the P2P terminal is right there, an early dinner at One Ayala Mall before heading home.</div>
+        <div class="chips">
+          <a class="maplink" href="https://www.google.com/maps/place/One+Ayala+(Ayala+Malls)/@14.5504545,121.0252502,17z/data=!3m1!4b1!4m6!3m5!1s0x3397c95b0494f8cf:0x38bcb0d8f0bb8b77!8m2!3d14.5504493!4d121.0278251!16s%2Fg%2F11t9cvsdk4" target="_blank">Open in Google Maps ↗</a>
+          <a class="maplink" href="https://www.ayalamalls.com/explore/one-ayala-mall/view-all/dine" target="_blank">Browse dining options ↗</a>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <div class="stub transit" data-lat="14.2639304" data-lng="121.0743493" data-prevlat="14.5504567" data-prevlng="121.02787">
+    <div class="time">↳ transit home</div>
+    <div class="title">P2P, One Ayala → Belair</div>
+    <div class="desc">Drops off right at the McDonald's on Santa Rosa–Tagaytay Rd, corner Laguna Bel Air Dr — a short walk from home.</div>
+    <div class="chips"><span class="chip leg"></span></div>
+  </div>
+
+  <div class="home-badge">home in Laguna by 8–9 PM</div>
+
+  <footer>distances are estimates, not live traffic quotes</footer>
+</div>
+
+<script>
+  function haversineKm(lat1, lng1, lat2, lng2){
+    const R = 6371;
+    const dLat = (lat2-lat1) * Math.PI/180;
+    const dLng = (lng2-lng1) * Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+    return R * 2 * Math.asin(Math.sqrt(a));
+  }
+  let legCounter = 0;
+  document.querySelectorAll('.stub[data-lat]').forEach(stub=>{
+    const lat = parseFloat(stub.dataset.lat), lng = parseFloat(stub.dataset.lng);
+    const plat = parseFloat(stub.dataset.prevlat), plng = parseFloat(stub.dataset.prevlng);
+    const legEl = stub.querySelector('.chip.leg');
+    if(!legEl) return;
+    const km = haversineKm(plat, plng, lat, lng);
+    legEl.textContent = km < 0.05 ? 'starting point' : '~' + km.toFixed(1) + ' km from previous stop';
+    if(km >= 0.05){
+      legCounter++;
+      const legId = 'leg-map-' + legCounter;
+      const dirUrl = `https://www.google.com/maps/dir/?api=1&origin=${plat},${plng}&destination=${lat},${lng}&travelmode=driving`;
+      const chips = stub.querySelector('.chips');
+      chips.insertAdjacentHTML('beforeend',
+        `<a class="chip live-dir" href="${dirUrl}" target="_blank">Live directions ↗</a>
+         <button type="button" class="chip show-map-btn" data-target="${legId}">Show map</button>`
+      );
+      stub.insertAdjacentHTML('beforeend',
+        `<div class="leg-map-wrap" id="${legId}" style="display:none;" data-origin="${plat},${plng}" data-dest="${lat},${lng}"></div>`
+      );
+    }
+  });
+  document.querySelectorAll('.show-map-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const wrap = document.getElementById(btn.dataset.target);
+      const isOpen = wrap.style.display !== 'none';
+      if(isOpen){
+        wrap.style.display = 'none';
+        btn.textContent = 'Show map';
+      } else {
+        if(!wrap.dataset.loaded){
+          wrap.innerHTML = `<iframe src="https://maps.google.com/maps?saddr=${wrap.dataset.origin}&daddr=${wrap.dataset.dest}&output=embed" loading="lazy"></iframe>`;
+          wrap.dataset.loaded = '1';
+        }
+        wrap.style.display = 'block';
+        btn.textContent = 'Hide map';
+      }
+    });
+  });
+</script>
+</body>
+</html>
