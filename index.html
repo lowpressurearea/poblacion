@@ -344,7 +344,7 @@
         `<a class="chip live-dir" href="${dirUrl}" target="_blank">Live directions ↗</a>
          <button type="button" class="chip show-map-btn" data-target="${legId}">Show map</button>`
       );
-      stub.insertAdjacentHTML('beforeend',
+      stub.querySelector('.stub-body').insertAdjacentHTML('beforeend',
         `<div class="leg-map-wrap" id="${legId}" style="display:none;" data-origin="${plat},${plng}" data-dest="${lat},${lng}"></div>`
       );
     }
