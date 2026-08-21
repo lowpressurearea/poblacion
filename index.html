@@ -118,6 +118,65 @@
   }
 
   footer{text-align:center;margin-top:32px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b6966;}
+
+  /* read-only progress indicator — mirrors the shared checklist live, not clickable */
+  .stub{display:flex;gap:14px;align-items:flex-start;}
+  .stub-body{flex:1;min-width:0;}
+  .check-ro{
+    width:20px;height:20px;flex:none;border:1.5px solid var(--line);border-radius:5px;
+    margin-top:2px;transition:.2s;
+  }
+  .check-ro.done{background:var(--teal-dark);border-color:var(--teal-dark);}
+  .check-ro.done::after{content:'✓';display:block;text-align:center;color:#fff;font-size:13px;line-height:17px;}
+
+  .live-banner{
+    max-width:680px;margin:0 auto 18px;padding:10px 16px;border-radius:12px;
+    background:var(--gold-light);color:var(--gold);font-family:'IBM Plex Mono',monospace;
+    font-size:12px;text-align:center;
+  }
+  .progress-track{
+    width:100%;height:6px;border-radius:100px;background:var(--line);
+    margin-bottom:20px;overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;width:0%;background:var(--teal-dark);border-radius:100px;
+    transition:width .4s ease;
+  }
+  .here-badge{
+    display:inline-block;margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    color:#fff;background:var(--gold);padding:2px 8px;border-radius:100px;letter-spacing:.03em;
+  }
+  .stub.current{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold);}
+
+  .location-card{
+    max-width:680px;margin:0 auto 20px;border:1px solid var(--line);border-radius:14px;
+    background:var(--paper2);overflow:hidden;
+  }
+  .location-head{
+    cursor:pointer;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    padding:12px 16px;font-family:'IBM Plex Mono',monospace;font-size:12px;
+  }
+  .location-head::-webkit-details-marker{display:none;}
+  .location-head::after{display:none;}
+  .location-view-toggle{
+    flex:none;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    color:var(--teal-dark);background:var(--gold-light);padding:5px 11px;border-radius:100px;
+    white-space:nowrap;
+  }
+  .location-view-toggle::before{content:'View Map ▾';}
+  .location-card[open] .location-view-toggle::before{content:'Hide Map ▴';}
+  .location-label{font-weight:600;color:var(--teal-dark);flex:none;}
+  .location-address-inline{
+    color:var(--ink);font-size:12px;overflow:hidden;text-overflow:ellipsis;
+    white-space:nowrap;flex:1;min-width:0;
+  }
+  .location-time{color:#8a8272;flex:none;}
+  .location-map-wrap iframe{width:100%;height:220px;border:0;display:block;}
+  .location-address{
+    padding:10px 16px;font-size:13px;color:#6b6353;line-height:1.5;
+    border-top:1px solid var(--line);
+  }
 </style>
 </head>
 <body>
@@ -131,27 +190,51 @@
 
   <div class="meta"><span>ETD 8:30–9:00 AM · Belair</span><span class="tag">Home by 8–9 PM</span></div>
 
-  <div class="stub" data-lat="14.2369253" data-lng="121.05525" data-prevlat="14.2639304" data-prevlng="121.0743493">
+  <div class="live-banner" id="liveBanner">Live — updates automatically as we go</div>
+  <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+
+  <details class="location-card" id="locationCard" style="display:none;">
+    <summary class="location-head">
+      <span class="location-label">📍</span>
+      <span class="location-address-inline" id="locationAddress">Locating…</span>
+      <span class="location-time" id="locationTime"></span>
+      <span class="location-view-toggle"></span>
+    </summary>
+    <div class="location-map-wrap"><iframe id="locationMapFrame" loading="lazy"></iframe></div>
+  </details>
+
+  <div class="stub" data-id="p1" data-id="p1" data-lat="14.2369253" data-lng="121.05525" data-prevlat="14.2639304" data-prevlng="121.0743493">
+    <div class="check-ro" data-check-id="p1"></div>
+    <div class="stub-body">
     <div class="time">8:30–9:00 AM</div>
     <div class="title">Leave Belair</div>
     <div class="desc">Head over to Nuvali Transport Terminal.</div>
     <div class="chips"><span class="chip leg"></span></div>
+    </div>
   </div>
 
-  <div class="stub transit" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.2369253" data-prevlng="121.05525">
+  <div class="stub transit" data-id="p1b" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.2369253" data-prevlng="121.05525">
+    <div class="check-ro" data-check-id="p1b"></div>
+    <div class="stub-body">
     <div class="time">9:00 AM or 9:40 AM</div>
     <div class="title">P2P, Nuvali → One Ayala Terminal</div>
     <div class="desc">Either the 9:00 AM or the 9:40 AM P2P trip direct from Nuvali Transport Terminal to One Ayala — whichever fits better.</div>
     <div class="chips"><span class="chip leg"></span></div>
+    </div>
   </div>
 
-  <div class="stub transit" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.5504567" data-prevlng="121.02787">
+  <div class="stub transit" data-id="p2" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.5504567" data-prevlng="121.02787">
+    <div class="check-ro" data-check-id="p2"></div>
+    <div class="stub-body">
     <div class="time">↳ transit</div>
     <div class="title">Grab, One Ayala → Lunch</div>
     <div class="chips"><span class="chip leg"></span></div>
+    </div>
   </div>
 
-  <div class="stub" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.562249" data-prevlng="121.029193">
+  <div class="stub" data-id="p3" data-lat="14.562249" data-lng="121.029193" data-prevlat="14.562249" data-prevlng="121.029193">
+    <div class="check-ro" data-check-id="p3"></div>
+    <div class="stub-body">
     <div class="time">~11:30 AM</div>
     <div class="title">Lunch at Izakaya Tori-Ichizu</div>
     <div class="desc">Skewers and small plates, unhurried.</div>
@@ -164,9 +247,12 @@
         <div class="site-preview-label">toriichizuph.com — official site</div>
       </div>
     </div>
+    </div>
   </div>
 
-  <div class="stub" data-lat="14.563338" data-lng="121.032933" data-prevlat="14.562249" data-prevlng="121.029193">
+  <div class="stub" data-id="p4" data-lat="14.563338" data-lng="121.032933" data-prevlat="14.562249" data-prevlng="121.029193">
+    <div class="check-ro" data-check-id="p4"></div>
+    <div class="stub-body">
     <div class="time">~1:00 PM</div>
     <div class="title">Dessert and coffee at Saglit by Flower Ranch Cafe</div>
     <div class="chips"><span class="chip leg"></span></div>
@@ -176,9 +262,12 @@
       <a class="maplink" href="https://www.google.com/maps/place/?q=place_id:ChIJlWcujmHJlzMR0QfHHgOfOVw" target="_blank">Open in Google Maps ↗</a>
       <br><a class="article-btn" href="https://flowerranchcafe.com/collections/saglit?sort_by=manual&filter.p.product_type=gid%3A%2F%2Fshopify%2FFilterSettingGroup%2F53805344&filter.v.price.gte=&filter.v.price.lte=" target="_blank">📄 Browse Saglit collection ↗</a>
     </div>
+    </div>
   </div>
 
-  <div class="stub" data-lat="14.5633" data-lng="121.0329" data-prevlat="14.563338" data-prevlng="121.032933">
+  <div class="stub" data-id="p5" data-lat="14.5633" data-lng="121.0329" data-prevlat="14.563338" data-prevlng="121.032933">
+    <div class="check-ro" data-check-id="p5"></div>
+    <div class="stub-body">
     <div class="time">~2:00 PM</div>
     <div class="title">Stroll around Poblacion</div>
     <div class="desc">Flexible — let the day set the pace.</div>
@@ -193,9 +282,12 @@
         </div>
       </div>
     </details>
+    </div>
   </div>
 
-  <div class="stub transit" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.5633" data-prevlng="121.0329">
+  <div class="stub transit" data-id="p5b" data-lat="14.5504567" data-lng="121.02787" data-prevlat="14.5633" data-prevlng="121.0329">
+    <div class="check-ro" data-check-id="p5b"></div>
+    <div class="stub-body">
     <div class="time">↳ transit</div>
     <div class="title">Grab, Poblacion → One Ayala</div>
     <div class="chips"><span class="chip leg"></span></div>
@@ -209,13 +301,17 @@
         </div>
       </div>
     </details>
+    </div>
   </div>
 
-  <div class="stub transit" data-lat="14.2639304" data-lng="121.0743493" data-prevlat="14.5504567" data-prevlng="121.02787">
+  <div class="stub transit" data-id="p6" data-lat="14.2639304" data-lng="121.0743493" data-prevlat="14.5504567" data-prevlng="121.02787">
+    <div class="check-ro" data-check-id="p6"></div>
+    <div class="stub-body">
     <div class="time">↳ transit home</div>
     <div class="title">P2P, One Ayala → Belair</div>
     <div class="desc">Drops off right at the McDonald's on Santa Rosa–Tagaytay Rd, corner Laguna Bel Air Dr — a short walk from home.</div>
     <div class="chips"><span class="chip leg"></span></div>
+    </div>
   </div>
 
   <div class="home-badge">home in Laguna by 8–9 PM</div>
@@ -270,6 +366,152 @@
       }
     });
   });
+
+  // read-only mirror of the shared checklist — same Firestore doc the interactive
+  // itinerary writes to. This page never writes, only listens, so there's nothing
+  // for anyone viewing it to accidentally change.
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+  import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB_wWqKrtPD84se7AehaicgKDz2hjwg7d0",
+    authDomain: "itinerars.firebaseapp.com",
+    projectId: "itinerars",
+    storageBucket: "itinerars.firebasestorage.app",
+    messagingSenderId: "1026743663679",
+    appId: "1:1026743663679:web:bb453a7ee50895d8ff0c8a",
+    measurementId: "G-WKBYSN4SL2"
+  };
+  const firebaseApp = initializeApp(firebaseConfig);
+  const db = getFirestore(firebaseApp);
+
+  const checklistDocRef = doc(db, 'sharedState', 'checklist');
+  const stopOrder = ['p1','p1b','p2','p3','p4','p5','p5b','p6'];
+  const liveBanner = document.getElementById('liveBanner');
+  const progFill = document.getElementById('progFill');
+
+  onSnapshot(checklistDocRef, snap=>{
+    const data = snap.exists() ? snap.data() : {};
+
+    document.querySelectorAll('.stub[data-id]').forEach(stub=>{
+      const id = stub.dataset.id;
+      const indicator = stub.querySelector('.check-ro');
+      if(indicator) indicator.classList.toggle('done', !!data[id]);
+      stub.classList.remove('current');
+    });
+
+    const doneCount = stopOrder.filter(id => data[id]).length;
+    const pct = (doneCount / stopOrder.length) * 100;
+    progFill.style.width = pct + '%';
+
+    const doneIds = stopOrder.filter(id => data[id]);
+    const currentId = doneIds.length ? doneIds[doneIds.length - 1] : null;
+    document.querySelectorAll('.here-badge').forEach(b=>b.remove());
+
+    if(currentId){
+      const currentStub = document.querySelector(`.stub[data-id="${currentId}"]`);
+      if(currentStub){
+        currentStub.classList.add('current');
+        const title = currentStub.querySelector('.title');
+        if(title) title.insertAdjacentHTML('afterend', '<span class="here-badge">📍 currently here</span>');
+      }
+    }
+
+    if(doneCount === stopOrder.length){
+      liveBanner.textContent = '✓ Live — itinerary complete, home safe!';
+    } else {
+      liveBanner.textContent = doneCount === 0
+        ? 'Live — not started yet'
+        : `Live — ${doneCount} of ${stopOrder.length} stops done`;
+    }
+  }, err=>console.error('Checklist listener failed', err));
+
+  // read-only "last known location" — mirrors whatever the interactive app last
+  // pushed while location sharing was turned on there. No writes from this page.
+  const locationDocRef = doc(db, 'sharedState', 'location');
+  const locationCard = document.getElementById('locationCard');
+  const locationTime = document.getElementById('locationTime');
+  const locationMapFrame = document.getElementById('locationMapFrame');
+  const locationAddress = document.getElementById('locationAddress');
+
+  // reverse geocoding via OpenStreetMap's free Nominatim API — no key needed.
+  // Throttled so a stream of GPS updates doesn't hammer the API: only re-looks-up
+  // when the position has moved meaningfully or 20s+ has passed since the last call.
+  let lastGeocodedKey = null;
+  let lastGeocodeTime = 0;
+
+  async function reverseGeocode(lat, lng){
+    try{
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=17&addressdetails=1`,
+        { headers: { 'Accept-Language': 'en' } }
+      );
+      if(!res.ok) throw new Error('Reverse geocode request failed');
+      const data = await res.json();
+      return data.display_name || null;
+    }catch(err){
+      console.error('Reverse geocode error', err);
+      return null;
+    }
+  }
+
+  onSnapshot(locationDocRef, snap=>{
+    if(!snap.exists()) return;
+    const data = snap.data();
+
+    // priority rule:
+    // - if both are currently live-sharing, Rissa's takes priority
+    // - otherwise, whoever's entry was updated most recently wins
+    const RISSA = 'rgbferrer@gmail.com';
+    const LANCE = 'lancepascualagustin@gmail.com';
+    const findEntry = (targetEmail) => {
+      const targetKey = Object.keys(data).find(k => k.trim().toLowerCase() === targetEmail);
+      return targetKey ? data[targetKey] : null;
+    };
+    const rissaEntry = findEntry(RISSA);
+    const lanceEntry = findEntry(LANCE);
+
+    let entry;
+    if(rissaEntry && rissaEntry.live && lanceEntry && lanceEntry.live){
+      entry = rissaEntry;
+    } else if(rissaEntry && lanceEntry){
+      const rissaTime = new Date(rissaEntry.updatedAt || 0).getTime();
+      const lanceTime = new Date(lanceEntry.updatedAt || 0).getTime();
+      entry = rissaTime >= lanceTime ? rissaEntry : lanceEntry;
+    } else {
+      entry = rissaEntry || lanceEntry;
+    }
+    if(!entry || entry.lat == null || entry.lng == null) return;
+
+    locationCard.style.display = 'block';
+    locationMapFrame.src = `https://maps.google.com/maps?q=${entry.lat},${entry.lng}&z=16&output=embed`;
+
+    const key = `${entry.lat.toFixed(4)},${entry.lng.toFixed(4)}`;
+    const now = Date.now();
+    // "Just now" one-time shares (entry.live === false) only ever fire a single
+    // update, so there's no flood risk — skip the throttle and geocode right away.
+    // Continuous live sharing keeps the normal 20s window to stay polite to Nominatim.
+    const isOneTimeShare = entry.live === false;
+    const throttleOk = isOneTimeShare || (now - lastGeocodeTime) > 20000;
+    if(key !== lastGeocodedKey && throttleOk){
+      lastGeocodedKey = key;
+      lastGeocodeTime = now;
+      locationAddress.textContent = 'Looking up address…';
+      reverseGeocode(entry.lat, entry.lng).then(addr=>{
+        locationAddress.textContent = addr || `${entry.lat.toFixed(5)}, ${entry.lng.toFixed(5)}`;
+      });
+    }
+
+    if(entry.updatedAt){
+      const updated = new Date(entry.updatedAt);
+      const timeStr = updated.toLocaleTimeString('en-PH', {
+        hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Manila'
+      });
+      locationTime.textContent = 'as of ' + timeStr;
+    }
+  }, err=>console.error('Location listener failed', err));
 </script>
 </body>
 </html>
